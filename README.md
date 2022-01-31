@@ -1,2 +1,2 @@
 # Microservices
-This demo illustrates usage of multiple .net microservices, MsSQL, RabbitMQ and gRPC
+The demo illustrates usage of multiple .net microservices, MsSQL, RabbitMQ and gRPC
