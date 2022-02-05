@@ -13,15 +13,13 @@ namespace CommandService.Data
 
                 var platforms = grpcClient.ReturnAllPlatforms();
 
-                Console.WriteLine($"--> Seeding new platforms... {platforms.ToList().Count()}");
-
                 SeedData(serviceScope.ServiceProvider.GetService<ICommandRepo>(), platforms);
             }
         }
 
         private static void SeedData(ICommandRepo repo, IEnumerable<Platform> platforms)
         {
-            Console.WriteLine("--> Seeding new platforms...");
+            Console.WriteLine($"--> Seeding new platforms... {platforms.ToList().Count()}");
 
             foreach (var plat in platforms)
             {
