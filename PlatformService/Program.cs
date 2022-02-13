@@ -3,6 +3,9 @@ using PlatformService.AsyncDataServices;
 using PlatformService.Data;
 using PlatformService.SyncDataServices.Grpc;
 using PlatformService.SyncDataServices.Http;
+using MassTransit;
+using PlatformService.MassTransit;
+using IHost = Microsoft.Extensions.Hosting.IHost;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +39,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services
+    .AddMassTransit(x =>
+        {
+            x.AddConsumer<MessageConsumer>();
+
+            x.UsingInMemory((context, cfg) =>
+            {
+                cfg.ConfigureEndpoints(context);
+            });
+        })
+    .AddMassTransitHostedService(true)
+    .AddHostedService<MessagePublisher>();
 
 Console.WriteLine($"--> CommandService Configuration {builder.Configuration["CommandService"]}");
 
@@ -56,5 +71,28 @@ app.MapControllers();
 
 app.MapGrpcService<GrpcPlatformService>();
 
+
+//IHost host = Host.CreateDefaultBuilder(args)
+//    .ConfigureServices((hostContext, services) =>
+//    {
+//        services.AddMassTransit(x =>
+//        {
+//            x.AddConsumer<MessageConsumer>();
+
+//            x.UsingInMemory((context,cfg) =>
+//            {
+//                cfg.ConfigureEndpoints(context);
+//            });
+//        });
+//        services.AddMassTransitHostedService(true);
+
+//        services.AddHostedService<MessagePublisher>();
+//    })
+//    .Build();
+
+//await host.RunAsync();
+
+
 PrepDb.PredPopulation(app, builder.Environment.IsProduction());
 app.Run();
+
